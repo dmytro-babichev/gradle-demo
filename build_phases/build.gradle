@@ -1,0 +1,19 @@
+logger.lifecycle('This is executed during the configuration phase.')
+
+task testConfigured {
+    logger.lifecycle('This is also executed during the configuration phase.')
+}
+
+task testLast << {
+    logger.lifecycle('This is executed during the execution phase.')
+}
+
+task testBoth {
+    doFirst {
+      logger.lifecycle('This is executed first during the execution phase.')
+    }
+    doLast {
+      logger.lifecycle('This is executed last during the execution phase.')
+    }
+    logger.lifecycle('This is executed during the configuration phase as well.')
+}

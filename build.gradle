@@ -1,0 +1,62 @@
+defaultTasks 'showInfo'
+apply plugin: 'eclipse'
+
+apply from: "subprojects.gradle"
+
+task showInfo << { 
+    println "Project name: $project.name"
+    println "Build file: $project.buildFile"
+    println "Project path: $project.path"
+    println "Project dir: $project.projectDir"
+    println ""
+    
+    println "To see all projects run 'gradle projects'"
+    println ""
+    
+    println "To see all tasks run 'gradle tasks'"
+    println ""
+    
+    println "Available subprojects:"
+    project.subprojects.each{subproject -> println "  $subproject.name"}
+    println ""
+    
+    println "To see demos please run:"
+    project.tasks.each{task -> 
+        if (task.name.startsWith("demo")) {
+		        println "  gradle $task.name"
+		    }
+		}
+}
+
+task demoBuildPhases(dependsOn: ["build_phases:testConfigured", "build_phases:testLast", "build_phases:testBoth"]) << {
+    println "Please note that sequence of dependant tasks is random in this case"
+}
+
+task demoStaticPhases(dependsOn: ["static_tasks:firstTask", "static_tasks:secondTask", "static_tasks:thirdTask", "static_tasks:forthTask"]) << {
+    println "Please note that sequence of dependant tasks is random in this case"
+}
+
+task demoOrdering(dependsOn: ["ordering:forthTask"]) << {
+    println "Please note that sequence of dependant tasks is determined"
+}
+
+task demoDependencies(dependsOn: ["dependencies:listJars"]) << {
+    println "If you want to build all-jar please run 'gradle makeAllJar'"
+}
+
+task demoCustomTask(dependsOn: ["custom_task:hello", "custom_task:greeting"])
+
+task demoCustomPlugin(dependsOn: ["custom_plugin:pluggedInHello"])
+
+// Dynamic tasks demo
+allprojects {
+    afterEvaluate { project ->
+        println "--- $project evaluated"
+        if (["dynamic_tasks", "ghost"].contains(project.name)) {
+            println "Adding dynamic task to $project. To execute created task execute 'gradle dynamic'"
+            project.task('dynamic') << {
+                println "Running dynamic task for $project"
+            }
+        }
+    }
+}

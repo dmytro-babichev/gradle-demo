@@ -1,0 +1,26 @@
+task firstTask << {
+    println "Running first task"
+}
+
+task additionalTaskA << {
+    println "Running first task"
+}
+
+task additionalTaskB << {
+    println "Running first task"
+}
+additionalTaskB.mustRunAfter additionalTaskA
+additionalTaskA.mustRunAfter firstTask
+//firstTask.mustRunAfter additionalTaskB
+
+task secondTask(dependsOn: ["firstTask", "additionalTaskA", "additionalTaskB"]) << {
+    println "Running second task"
+}
+
+task thirdTask(dependsOn: "secondTask") << {
+    println "Running third task"
+}
+
+task forthTask(dependsOn: thirdTask) << {
+    println "Running forth task"
+}

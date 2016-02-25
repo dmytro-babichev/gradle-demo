@@ -1,0 +1,15 @@
+task firstTask << {
+    println "Running first task"
+}
+
+task secondTask << {
+    println "Running second task"
+}
+
+task thirdTask << {
+    println "Running third task"
+}
+
+task forthTask << {
+    println "Running forth task"
+}

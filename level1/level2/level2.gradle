@@ -1,0 +1,21 @@
+/*
+repositories {
+    flatDir {
+        dirs 'lib'
+    }
+}
+*/
+
+dependencies {
+	compile group: 'commons-collections', name: 'commons-collections', version: '3.2'
+	compile files('lib/hsqldb-2.2.9.jar', 'lib/sqljdbc-4.0.2206.100.jar')  
+}
+
+/*uploadArchives {
+    repositories {
+        mavenDeployer {
+            //repository(url: "file://localhost/tmp/myRepo/")
+            mavenLocal()
+        }
+    }
+}*/

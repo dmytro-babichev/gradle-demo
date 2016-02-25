@@ -1,0 +1,24 @@
+dependencies {
+    compile project(':level1')
+    compile project(':smartling')
+}
+
+task listJars << {
+		println "Compile JARs"
+    configurations.compile.each {File file -> println file.name }
+    println ""
+    
+    println "Test-compile JARs"
+    configurations.testCompile.each {File file -> println file.name }
+}
+
+task makeAllJar(type: Jar) {
+    manifest {
+        attributes 'Implementation-Title': 'Gradle Jar File',  
+        'Implementation-Version': version,
+        'Main-Class': 'com.mkyong.DateUtils'
+    }
+    baseName = project.name + '-all'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it)}}
+    with jar
+}

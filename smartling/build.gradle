@@ -1,0 +1,71 @@
+apply plugin: 'maven'
+
+buildscript {
+	repositories { mavenCentral() }
+	dependencies { classpath 'org.ajoberstar:gradle-git:+' }
+}
+
+import org.ajoberstar.grgit.*
+
+def repoUri = 'https://github.com/Smartling/api-sdk-java.git'
+def repoFolder = file('repository')
+def sourceBaseDir = "$repoFolder/api-sdk"
+def mvn_bin = System.getenv().MVN_HOME + '/bin/mvn.cmd'
+
+
+task getLatestSources << {
+		logger.lifecycle("Getting latest smartling sorces from repository")
+		logger.info("Source repository uri: '$repoUri'")
+		logger.info("Target folder: '$repoFolder'.")
+		//def repositoryCredentials = new Credentials(username: bitBucketLogin, password: bitBucketPassword)
+		if (!repoFolder.exists()) {
+			logger.lifecycle("Cloning repository")
+			logger.info("Folder '$repoFolder' does not exist. Cloning '$repoUri' into it.")
+			def grgit = Grgit.clone(
+			uri: repoUri,
+			dir: repoFolder,
+			//credentials: repositoryCredentials,
+			bare: false,
+			checkout: true
+			)
+		} else {
+			logger.lifecycle("Pulling from repository")
+			logger.info("Folder '$repoFolder' already exists. Pulling latest changes from '$repoUri' into it.")
+			def grgit = Grgit.open(dir: repoFolder/*, creds: repositoryCredentials*/)
+			grgit.pull()
+		}
+}
+
+task deleteDownloadedSources << {
+    if (!repoFolder.exists()) {
+		    delete repoFolder
+    }
+}
+
+task buildWithMaven(type:Exec, dependsOn: getLatestSources) {
+		environment = System.getenv()
+    workingDir = sourceBaseDir
+    inputs.files fileTree(sourceBaseDir) {
+         include '**/src/**/*.java', '**/src/**/*.xml', '**/pom.xml'
+    }
+    outputs.files fileTree(sourceBaseDir) {
+        include '**/target/*.jar'
+        exclude '**/target/*javadoc.jar'
+        exclude '**/target/*sources.jar'
+    }
+    commandLine "$mvn_bin", "-DskipTests", "package"
+    //executable ["echo", "hello world"]
+    dependencies {
+        compile outputs.files
+		}
+}
+
+task mvnClean(type:Exec) {
+    environment = System.getenv()
+    workingDir = sourceBaseDir
+    commandLine "$mvn_bin", "clean"
+}
+
+compileJava.dependsOn buildWithMaven
+clean.dependsOn mvnClean
+clean.dependsOn deleteDownloadedSources

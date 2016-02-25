@@ -1,0 +1,5 @@
+rootProject.name = 'nesting_projects'
+include 'build_phases', 'dynamic_tasks', 'ghost', 'level1:level2:level3', 'static_tasks', 'ordering', 'dependencies', 'smartling', 'custom_task', 'custom_plugin'
+
+project(':level1').buildFileName = 'level1.gradle'
+project(':level1:level2').buildFileName = 'level2.gradle'

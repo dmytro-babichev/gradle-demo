@@ -1,0 +1,5 @@
+
+dependencies {
+    compile project(':level1:level2')
+    testCompile fileTree('testLib')
+}
